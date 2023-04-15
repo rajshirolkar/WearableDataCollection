@@ -1,12 +1,9 @@
-# WearableDataCollection
-
 # Wearable Data Collection Device Project for ESP32
 
 This repository contains individual sensor codes and a combined code for interfacing multiple sensors with an ESP32 microcontroller. The sensors used in this project are BME280, TSL2561, MLX90614, and MAX30102.
 
 ## Table of Contents
 
-- [WearableDataCollection](#wearabledatacollection)
 - [Wearable Data Collection Device Project for ESP32](#wearable-data-collection-device-project-for-esp32)
   - [Table of Contents](#table-of-contents)
   - [Sensor Overview](#sensor-overview)
