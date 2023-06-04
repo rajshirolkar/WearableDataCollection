@@ -51,64 +51,65 @@ void printAllSensorReadings()
     delay(20);
 
     // Print BME280 readings
-    sensorData = "BME280 Temperature = " + String(dummy++) + " *C";
+    sensorData = "AmbTemp=" + String(dummy++) + " *C";
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
     delay(20);
 
-    sensorData = "BME280 Humidity = " + String(dummy++) + " %";
+    sensorData = "Humidity=" + String(dummy++) + " %";
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
     delay(20);
 
-    sensorData = "BME280 Pressure = " + String(dummy++ / 100.0F) + " hPa";
+    sensorData = "Pressure=" + String(dummy++ / 100.0F) + " hPa";
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
     delay(20);
 
     // Print TSL2561 readings
-    sensorData = "TSL2561 Light = " + String(dummy++) + " lux";
+    sensorData = "Light=" + String(dummy++) + " lux";
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
     delay(20);
 
-    sensorData = "GSR Value = " + String(dummy++);
+    sensorData = "GSR=" + String(dummy++);
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
     delay(20);
 
-    // Print MLX90614 readings
-    sensorData = "MLX90614 Ambient temperature = " + String(dummy++) + " *C";
-    pCharacteristic->setValue(sensorData.c_str());
-    pCharacteristic->notify();
-    Serial.println(sensorData);
-    delay(20);
-
-    sensorData = "MLX90614 Object temperature = " + String(dummy++) + " *C";
+    sensorData = "BodyTemp=" + String(dummy++) + " *C";
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
     delay(20);
 
     // Print MAX30102 readings
-    sensorData = "MAX30102 IR = " + String(dummy++);
+    sensorData = "Infrared=" + String(dummy++);
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
     delay(20);
 
-    sensorData = "MAX30102 BPM = " + String(dummy++);
+    sensorData = "BPM=" + String(dummy++);
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
     delay(20);
 
-    sensorData = "MAX30102 Avg BPM = " + String(dummy++);
+    sensorData = "AvgBPM=" + String(dummy++);
+    pCharacteristic->setValue(sensorData.c_str());
+    pCharacteristic->notify();
+    Serial.println(sensorData);
+    delay(20);
+
+    // Add timestamp
+    time_t currentTime = time(NULL);
+    sensorData = String(currentTime);
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
     Serial.println(sensorData);
