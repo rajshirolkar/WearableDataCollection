@@ -31,20 +31,17 @@ int beatAvg;
 
 unsigned long currentMillis;
 unsigned long heartRateStartMillis;
-unsigned long heartRateDuration = 30000; // 30 seconds
+unsigned long heartRateDuration = 20000; // 30 seconds
 bool heartRateActive = true;
 
 unsigned long otherSensorsStartMillis;
 unsigned long otherSensorsDuration = 1000; // Read other sensors for 1 second
 bool otherSensorsActive = false;
 
-// TwoWire Wire1(1);
-
 void setup()
 {
     Serial.begin(115200);
     Wire.begin();
-    // Wire1.begin(21, 22);
 
     if (!bme.begin(0x76))
     {
@@ -78,9 +75,6 @@ void setup()
     particleSensor.setADCRange(4096);  // Set ADC range to 4096
     particleSensor.setPulseAmplitudeRed(0x0A);
     particleSensor.setPulseAmplitudeGreen(0);
-
-    // particleSensor.softReset();
-    // delay(100);
 
     heartRateStartMillis = millis();
 
@@ -130,6 +124,7 @@ void loop()
     }
     else if (otherSensorsActive)
     {
+        delay(2000);
         readBME280();
         readTSL2561();
         readGSR();
@@ -138,6 +133,7 @@ void loop()
         if (currentMillis - otherSensorsStartMillis >= otherSensorsDuration)
         {
             otherSensorsActive = false;
+            delay(2000);
             printAllSensorReadings();
 
             // Reset and start the next cycle
@@ -200,22 +196,6 @@ void readGSR()
     Serial.println(percentage);
 }
 
-// void readMAX30205() {
-//   Wire.beginTransmission(MAX30205_ADDR);
-//   Wire.write(MAX30205_TEMP);
-//   Wire.endTransmission();
-//   Wire.requestFrom(MAX30205_ADDR, 2);
-
-//   if (Wire.available() == 2) {
-//     uint8_t msb = Wire.read();
-//     uint8_t lsb = Wire.read();
-//     float temperature = ((msb << 8) | lsb) * 0.00390625;
-
-//     Serial.print("Temperature: ");
-//     Serial.print(temperature);
-//     Serial.println(" °C");
-//   }
-// }
 void readMAX30102()
 {
     long irValue = particleSensor.getIR();
@@ -245,24 +225,30 @@ void readMAX30102()
     Serial.print(", BPM=");
     Serial.print(beatsPerMinute);
     Serial.print(", Avg BPM=");
-    Serial.print(beatAvg);
+    Serial.println(beatAvg);
 }
 
 void printAllSensorReadings()
 {
+
+    String sensorData = "START";
+    pCharacteristic->setValue(sensorData.c_str());
+    pCharacteristic->notify();
+    Serial.println(sensorData);
+    delay(20);
+
     // Print BME280 readings
-    // String sensorData = "BME280 Temperature = " + String(bme.readTemperature()) + " *C";
-    // pCharacteristic->setValue(sensorData.c_str());
-    // pCharacteristic->notify();
-    // delay(20);
-    String sensorData = "BME280 Temperature = ";
-
-    // sensorData = "BME280 Humidity = " + String(bme.readHumidity()) + " %";
+    // sensorData = "AmbTemp=" + String(bme.readTemperature()) + " *C";
     // pCharacteristic->setValue(sensorData.c_str());
     // pCharacteristic->notify();
     // delay(20);
 
-    // sensorData = "BME280 Pressure = " + String(bme.readPressure() / 100.0F) + " hPa";
+    // sensorData = "Humidity=" + String(bme.readHumidity()) + " %";
+    // pCharacteristic->setValue(sensorData.c_str());
+    // pCharacteristic->notify();
+    // delay(20);
+
+    // sensorData = "Pressure=" + String(bme.readPressure() / 100.0F) + " hPa";
     // pCharacteristic->setValue(sensorData.c_str());
     // pCharacteristic->notify();
     // delay(20);
@@ -272,7 +258,7 @@ void printAllSensorReadings()
     tsl.getEvent(&event);
     if (event.light)
     {
-        sensorData = "TSL2561 Light = " + String(event.light) + " lux";
+        sensorData = "Light=" + String(event.light) + " lux";
         pCharacteristic->setValue(sensorData.c_str());
         pCharacteristic->notify();
         delay(20);
@@ -281,35 +267,53 @@ void printAllSensorReadings()
     // Print GSR readings
     int GSRValue = analogRead(GSRPin);
     float percentage = ((float)(GSRValue - minValue) / (float)(maxValue - minValue)) * 100;
-    sensorData = "GSR Value = " + String(GSRValue) + ", Percentage = " + String(percentage);
+    sensorData = "GSR=" + String(GSRValue);
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
+    Serial.println(sensorData);
+    delay(20);
+
+    sensorData = "GSRPercent=" + String(percentage);
+    pCharacteristic->setValue(sensorData.c_str());
+    pCharacteristic->notify();
+    Serial.println(sensorData);
     delay(20);
 
     // Print MLX90614 readings
-    sensorData = "MLX90614 Ambient temperature = " + String(mlx.readAmbientTempC()) + " *C";
+    sensorData = "AmbTemp=" + String(mlx.readAmbientTempC()) + " *C";
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
+    Serial.println(sensorData);
     delay(20);
 
-    sensorData = "MLX90614 Object temperature = " + String(mlx.readObjectTempC()) + " *C";
+    sensorData = "ObjTemp=" + String(mlx.readObjectTempC()) + " *C";
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
+    Serial.println(sensorData);
     delay(20);
 
     // Print MAX30102 readings
-    sensorData = "MAX30102 IR = " + String(particleSensor.getIR());
+    sensorData = "Infrared=" + String(particleSensor.getIR());
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
+    Serial.println(sensorData);
     delay(20);
 
-    sensorData = "MAX30102 BPM = " + String(beatsPerMinute);
+    sensorData = "BPM=" + String(beatsPerMinute);
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
+    Serial.println(sensorData);
     delay(20);
 
-    sensorData = "MAX30102 Avg BPM = " + String(beatAvg);
+    sensorData = "AvgBPM=" + String(beatAvg);
     pCharacteristic->setValue(sensorData.c_str());
     pCharacteristic->notify();
+    Serial.println(sensorData);
+    delay(20);
+
+    sensorData = "STOP";
+    pCharacteristic->setValue(sensorData.c_str());
+    pCharacteristic->notify();
+    Serial.println(sensorData);
     delay(20);
 }
