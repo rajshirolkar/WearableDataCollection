@@ -16,6 +16,18 @@ class SensorData(BaseModel):
     pressure: float
     infrared_temperature: float
 
+# Define a function to scan for BLE devices
+async def scan():
+    devices = []
+    scanner = btle.Scanner()
+    for device in scanner.scan(5):
+        devices.append(device)
+    return devices
+
+# Define a route to get a list of BLE devices
+@app.get("/scan")
+async def get_devices():
+    return await scan()
 
 @app.post("/sensor_data/")
 async def receive_sensor_data(data: SensorData):
